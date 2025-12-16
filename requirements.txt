@@ -1,0 +1,2 @@
+streamlit==1.27.1  # Pin to a specific, stable version
+openai
