@@ -111,7 +111,7 @@ if st.button("Generate Controlled Summary", type="primary"):
         # --- 4. DISPLAY RESULTS ---
         
         # Use tabs for a clean presentation
-        tab1, tab2, tab3 = st.tabs(["Summary Output", "Factuality & Logic Check", "Controllability Insights"])
+        tab1, tab2, tab3 = st.tabs(["Summary Output", "Heuristic Review", "Controllability Insights"])
 
         with tab1:
             st.header(f"Summary ({style} Style)")
