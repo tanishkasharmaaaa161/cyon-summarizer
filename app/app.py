@@ -70,7 +70,7 @@ st.sidebar.info("Manifestos loaded: " + ", ".join(MANIFESTOS.keys()))
 # --- MAIN APPLICATION VIEW ---
 
 st.title("📌 Choose-Your-Own-News Summarizer (CYON-S)")
-st.caption("A multi-faceted LLM application featuring style control and logic verification.")
+st.caption("A multi-faceted LLM application featuring style control and prompt-level controllability.")
 st.markdown("---")
 
 # Input Field
@@ -101,10 +101,10 @@ if st.button("Generate Controlled Summary", type="primary"):
             # --- 2. GENERATE SUMMARY ---
             summary_response = llm_core.generate_summary(final_prompt)
             
-            # --- 3. RUN LOGIC CHAIN EXTRACTOR (LCE) ---
-            # This is a placeholder for the LCE call. In the final version, this calls the LLM again.
-            # For now, we simulate the output.
-            lce_output = llm_core.run_logic_chain_extractor(summary_response)
+            # --- 3. RUN HEURISTIC REVIEW ---
+            # This module performs prompt-based, heuristic analysis of coherence,
+            # length adequacy, and tone neutrality. It does NOT perform factual verification.
+            lce_output = llm_core.run_heuristic_review(summary_response)
             
             st.success("Summary Generated Successfully!")
 
@@ -119,11 +119,11 @@ if st.button("Generate Controlled Summary", type="primary"):
             st.write(summary_response)
 
         with tab2:
-            st.header("Logic Chain Extractor (LCE) Report")
-            # Display the simulated LCE output
+            st.header("Heuristic Logic & Tone Review")
             st.code(lce_output)
             st.markdown("""
-            *This tab shows the output from the Logic Chain Extractor, an additional LLM call designed to verify the factual consistency and logical flow of the generated summary.*
+            *This tab shows the output of a prompt-based heuristic review module that provides indicative signals about logical coherence, summary length adequacy, and tone neutrality.  
+            This review is heuristic and does **not** constitute factual verification.*
             """)
 
         with tab3:
