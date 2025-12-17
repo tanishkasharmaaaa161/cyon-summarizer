@@ -82,6 +82,7 @@ User Input (News Article)
 
 ## Repository Structure
 
+```bash
 ├── app/
 │ ├── app.py # Streamlit application
 │ ├── llm_core.py # LLM interaction and heuristic review
@@ -91,6 +92,7 @@ User Input (News Article)
 ├── requirements.txt
 ├── README.md
 └── .gitignore
+```
 
 ---
 
