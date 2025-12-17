@@ -3,14 +3,14 @@ import os
 
 class LLMCore:
     """
-    Handles all interactions with the OpenAI models (GPT-3.5 or GPT-4).
-    This includes generating the summary and running the Logic Chain Extractor (LCE).
+    Handles interactions with the OpenAI model for prompt-based
+    news summarization and heuristic controllability analysis.
     """
 
     def __init__(self, api_key):
         # Initialize the OpenAI Client
         self.client = OpenAI(api_key=api_key)
-        # We'll use a strong model for reliable summaries and LCE checks
+        # Model used for prompt-driven news summarization
         self.model_name = "gpt-3.5-turbo" 
 
     def generate_summary(self, prompt: str) -> str:
@@ -35,39 +35,64 @@ class LLMCore:
             # Return a clear error message if the API call fails
             return f"Error during summary generation (API call failed). Check your secrets.toml file and network connection. Error: {e}"
 
-    def run_logic_chain_extractor(self, summary: str) -> str:
+    def run_heuristic_review(self, summary: str) -> str:
         """
-        This is a placeholder for the Logic Chain Extractor (LCE). 
-        In a real application, this would be a second, separate LLM call 
-        designed to critically review the generated summary for factuality and logic.
-        
-        For initial setup, we return a simulated report.
+        Heuristic review module for logical coherence, length adequacy,
+        and tone neutrality. This module does NOT perform factual verification.
         """
-        
-        # In the final version, you would call the model here:
-        # lce_prompt = f"Critically analyze the following summary for factual errors and logical gaps:\n{summary}"
-        # ... API call code ...
 
-        # Simulation for immediate testing:
+        words = summary.split()
+        word_count = len(words)
+
+        # Heuristic 1: Length adequacy
+        if word_count < 50:
+            length_assessment = "Too short – risk of oversimplification"
+        elif word_count > 300:
+            length_assessment = "Too long – risk of redundancy"
+        else:
+            length_assessment = "Appropriate compression level"
+
+        # Heuristic 2: Logical flow proxy
+        transition_words = ["because", "therefore", "however", "while", "thus", "although"]
+        transition_count = sum(1 for w in transition_words if w in summary.lower())
+
+        if transition_count >= 2:
+            coherence = "High (clear logical transitions detected)"
+        elif transition_count == 1:
+            coherence = "Moderate (limited logical transitions)"
+        else:
+            coherence = "Low (implicit or missing logical connectors)"
+
+        # Heuristic 3: Tone & bias proxy
+        opinion_words = ["should", "must", "clearly", "obviously", "undoubtedly"]
+        bias_hits = sum(1 for w in opinion_words if w in summary.lower())
+
+        if bias_hits == 0:
+            bias_risk = "Low"
+        elif bias_hits <= 2:
+            bias_risk = "Moderate"
+        else:
+            bias_risk = "High"
+
         report = f"""
-        LCE REPORT - {self.model_name}
+        HEURISTIC REVIEW REPORT (Prompt-based)
 
-        Summary Factual Integrity Check:
-        - Result: PASS (Simulated)
-        - Confidence Score: 95/100 (Simulated)
+        Length Assessment:
+        - {length_assessment}
+        - Word Count: {word_count}
 
-        Logical Flow Assessment:
-        - Result: PASS (Simulated)
-        - Notes: The summary maintains logical coherence throughout, linking causes and effects clearly.
+        Logical Coherence Indicator:
+        - Estimated Level: {coherence}
+        - Basis: Transition word analysis
 
-        Bias Review:
-        - Result: LOW BIAS DETECTED (Simulated)
-        - Notes: Tone is neutral and adheres to the Bias Avoidance control level.
+        Tone & Bias Indicator:
+        - Estimated Bias Risk: {bias_risk}
+        - Basis: Presence of directive or opinionated language
 
-        This report confirms the summary meets the required factuality and control parameters.
+        Disclaimer:
+        This review provides heuristic indicators only.
+        It does NOT constitute factual verification.
         """
-        return report
 
-# --- NOTE ---
-# You may also need a 'prompt_compiler.py' file in the same directory!
-# That file contains the 'compile_prompt' function used in app.py.
+        return report
+    
